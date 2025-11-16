@@ -1,4 +1,3 @@
-import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 import { Button } from "@/components/ui/button";
 import { Card, CardHeader, CardTitle, CardDescription, CardContent } from "@/components/ui/card";
@@ -18,8 +17,6 @@ import {
 export default function AboutPage() {
   return (
     <>
-      <Navbar />
-      
   {/* Hero Section */}
   <section className="relative bg-gradient-to-br from-muted to-accent py-20 lg:py-28">
         <div className="max-w-6xl mx-auto px-4 sm:px-6 lg:px-8">

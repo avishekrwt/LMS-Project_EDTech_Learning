@@ -169,13 +169,13 @@ export default function Navbar() {
                     }}
                   >
                     <DropdownMenuItem className="p-0">
-                      <Link to="/courses" className="block w-full px-3 py-2">All Courses</Link>
+                      <Link to="/courses?tab=all" className="block w-full px-3 py-2">All Courses</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem className="p-0">
-                      <Link to="/courses" className="block w-full px-3 py-2">By Department</Link>
+                      <Link to="/courses?tab=department" className="block w-full px-3 py-2">By Department</Link>
                     </DropdownMenuItem>
                     <DropdownMenuItem className="p-0">
-                      <Link to="/courses" className="block w-full px-3 py-2">Featured</Link>
+                      <Link to="/courses?tab=featured" className="block w-full px-3 py-2">Featured</Link>
                     </DropdownMenuItem>
                   </DropdownMenuContent>
                 </DropdownMenu>
@@ -260,21 +260,21 @@ export default function Navbar() {
                 {mobileCoursesOpen && (
                   <div className="ml-4 space-y-1">
                     <Link
-                      to="/courses"
+                      to="/courses?tab=all"
                       onClick={() => setIsMenuOpen(false)}
                       className="relative text-base font-medium w-full text-left rounded-lg px-3 py-2 hover:bg-accent block"
                     >
                       All Courses
                     </Link>
                     <Link
-                      to="/courses"
+                      to="/courses?tab=department"
                       onClick={() => setIsMenuOpen(false)}
                       className="relative text-base font-medium w-full text-left rounded-lg px-3 py-2 hover:bg-accent block"
                     >
                       By Department
                     </Link>
                     <Link
-                      to="/courses"
+                      to="/courses?tab=featured"
                       onClick={() => setIsMenuOpen(false)}
                       className="relative text-base font-medium w-full text-left rounded-lg px-3 py-2 hover:bg-accent block"
                     >

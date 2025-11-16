@@ -1,5 +1,4 @@
 // src/pages/LandingPage.tsx
-import Navbar from "@/components/layout/Navbar";
 import HeroSection from "@/components/sections/HeroSection";
 // Removed duplicates: EmpoweringTeachersSection and SmartAttendanceSection
 import FeaturesSection from "@/components/sections/FeaturesSection";
@@ -15,7 +14,6 @@ import Footer from "@/components/layout/Footer";
 export default function LandingPage() {
   return (
     <>
-      <Navbar />
       <HeroSection />
       <FeaturesSection />
       <PlatformWorkflowSection />
