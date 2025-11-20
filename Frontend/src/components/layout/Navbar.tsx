@@ -1,5 +1,5 @@
 import { useState, useEffect, useRef } from "react"
-import { Link, useLocation } from "react-router-dom"
+import { Link, useLocation, useNavigate } from "react-router-dom"
 import { Button } from "@/components/ui/button"
 import {
   DropdownMenu,
@@ -9,8 +9,11 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Menu, User, X } from "lucide-react"
 import ThemeToggle from "@/components/ThemeToggle"
+import { useAuthModal } from "@/hooks/useAuthModal"
 
 export default function Navbar() {
+  const { openSignIn } = useAuthModal()
+  const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
   const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [coursesDropdownOpen, setCoursesDropdownOpen] = useState(false)
@@ -184,9 +187,20 @@ export default function Navbar() {
               <NavLink to="/about" currentPath={location.pathname}>About</NavLink>
               <NavLink to="/contact" currentPath={location.pathname}>Contact</NavLink>
 
-              <Button size="sm" className="ml-2 px-4" onClick={() => setIsLoggedIn(true)}>
-                Sign In
-              </Button>
+              <div className="flex items-center space-x-2 ml-2">
+                <Button size="sm" variant="outline" className="px-4" onClick={openSignIn}>
+                  Sign In
+                </Button>
+                <Button
+                  size="sm"
+                  className="px-4"
+                  onClick={() => {
+                    navigate("/signup")
+                  }}
+                >
+                  Sign Up
+                </Button>
+              </div>
             </>
           ) : (
             <>
@@ -289,15 +303,14 @@ export default function Navbar() {
                 <NavLink to="/contact" currentPath={location.pathname} mobile onClick={() => setIsMenuOpen(false)}>
                   Contact
                 </NavLink>
-                <Button
-                  onClick={() => {
-                    setIsLoggedIn(true)
-                    setIsMenuOpen(false)
-                  }}
-                  className="w-full mt-2"
-                >
-                  Sign In
-                </Button>
+                <div className="flex flex-col space-y-2 mt-2">
+                  <Button variant="outline" className="w-full" onClick={() => { openSignIn(); setIsMenuOpen(false); }}>
+                    Sign In
+                  </Button>
+                  <Button className="w-full" onClick={() => { navigate("/signup"); setIsMenuOpen(false); }}>
+                    Sign Up
+                  </Button>
+                </div>
               </>
             ) : (
               <>

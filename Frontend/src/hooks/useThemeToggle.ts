@@ -1,14 +1,18 @@
-import { useEffect, useState } from "react";
+import { useCallback } from "react";
+import { useTheme } from "next-themes";
 
 export const useThemeToggle = () => {
-  const [theme, setTheme] = useState(localStorage.getItem("theme") || "light");
+  const { theme: currentTheme, setTheme, resolvedTheme } = useTheme();
 
-  useEffect(() => {
-    document.documentElement.classList.toggle("dark", theme === "dark");
-    localStorage.setItem("theme", theme);
-  }, [theme]);
+  const theme = (resolvedTheme || currentTheme) as string | undefined;
 
-  const toggleTheme = () => setTheme(theme === "light" ? "dark" : "light");
+  const toggleTheme = useCallback(() => {
+    if ((theme || "light") === "light") {
+      setTheme("dark");
+    } else {
+      setTheme("light");
+    }
+  }, [setTheme, theme]);
 
-  return { theme, toggleTheme };
+  return { theme: theme || "light", toggleTheme };
 };
