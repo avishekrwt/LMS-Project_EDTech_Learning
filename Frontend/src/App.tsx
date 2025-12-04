@@ -11,6 +11,8 @@ import ComingSoonPage from "@/pages/ComingSoonPage";
 import DashboardPage from "@/pages/DashboardPage";
 import MyCoursesPage from "@/pages/MyCoursesPage";
 import MyCertificatesPage from "@/pages/MyCertificatesPage";
+import MyAccountPage from "@/pages/MyAccountPage";
+import SettingsPage from "@/pages/SettingsPage";
 import ProtectedRoute from "@/components/ProtectedRoute";
 
 
@@ -47,6 +49,22 @@ function App() {
           element={
             <ProtectedRoute>
               <MyCertificatesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-account"
+          element={
+            <ProtectedRoute>
+              <MyAccountPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/settings"
+          element={
+            <ProtectedRoute>
+              <SettingsPage />
             </ProtectedRoute>
           }
         />

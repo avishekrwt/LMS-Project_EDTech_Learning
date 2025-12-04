@@ -34,6 +34,24 @@ router.post("/signup", async (req, res) => {
       return res.status(400).json({ error: error.message });
     }
 
+    // Ensure profile is created/updated with first_name and last_name
+    if (data.user?.id) {
+      const { error: profileError } = await supabaseService
+        .from('profiles')
+        .upsert({
+          id: data.user.id,
+          first_name: firstName,
+          last_name: lastName,
+        }, {
+          onConflict: 'id'
+        });
+
+      if (profileError) {
+        console.error('Profile creation error:', profileError);
+        // Don't fail signup if profile creation fails, but log it
+      }
+    }
+
     return res.json({
       message: "User created successfully",
       user: data.user,

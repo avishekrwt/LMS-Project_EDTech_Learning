@@ -169,7 +169,11 @@ export default function DashboardPage() {
                     <CardTitle className="text-xl font-semibold">Active learning paths</CardTitle>
                     <p className="text-sm text-white/70">Pick up exactly where you left off.</p>
                   </div>
-                  <Button variant="outline" className="border-white/30 text-white hover:bg-white/10">
+                  <Button 
+                    variant="outline" 
+                    className="border-white/30 text-white hover:bg-white/10"
+                    onClick={() => window.location.href = '/my-courses'}
+                  >
                     View all
                   </Button>
                 </CardHeader>

@@ -217,12 +217,12 @@ export default function Navbar() {
                     <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary">
                       {profile?.firstName?.[0] ? profile.firstName[0] : <User size={16} />}
                     </div>
-                    <span>{profile?.firstName ?? "Profile"}</span>
+                    <span>{profile?.firstName && profile?.lastName ? `${profile.firstName} ${profile.lastName}` : profile?.firstName || "Profile"}</span>
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="z-50 mt-1 w-48 rounded-lg shadow-lg">
-                  <DropdownMenuItem className="cursor-pointer hover:bg-accent">My Account</DropdownMenuItem>
-                  <DropdownMenuItem className="cursor-pointer hover:bg-accent">Settings</DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer hover:bg-accent" onClick={() => navigate('/my-account')}>My Account</DropdownMenuItem>
+                  <DropdownMenuItem className="cursor-pointer hover:bg-accent" onClick={() => navigate('/settings')}>Settings</DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => {
                       clearUser()
@@ -338,7 +338,7 @@ export default function Navbar() {
                     <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary">
                       {profile?.firstName?.[0] ? profile.firstName[0] : <User size={16} />}
                     </div>
-                    <span>{profile?.firstName ?? 'Profile'}</span>
+                    <span>{profile?.firstName && profile?.lastName ? `${profile.firstName} ${profile.lastName}` : profile?.firstName || 'Profile'}</span>
                   </div>
                   <svg className={`h-4 w-4 transition-transform ${mobileProfileOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -348,13 +348,13 @@ export default function Navbar() {
                   <div className="ml-4 space-y-1">
                     <button
                       className="relative text-base font-medium w-full text-left rounded-lg px-3 py-2 hover:bg-accent"
-                      onClick={() => setIsMenuOpen(false)}
+                      onClick={() => { navigate('/my-account'); setIsMenuOpen(false); }}
                     >
                       My Account
                     </button>
                     <button
                       className="relative text-base font-medium w-full text-left rounded-lg px-3 py-2 hover:bg-accent"
-                      onClick={() => setIsMenuOpen(false)}
+                      onClick={() => { navigate('/settings'); setIsMenuOpen(false); }}
                     >
                       Settings
                     </button>

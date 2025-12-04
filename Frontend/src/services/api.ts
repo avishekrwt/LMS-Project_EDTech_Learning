@@ -129,6 +129,19 @@ export interface CertificateListResponse {
   }>;
 }
 
+export interface UserProfile {
+  id: string;
+  firstName: string;
+  lastName: string;
+  email: string;
+  avatarUrl: string | null;
+  role: string;
+  organization: string;
+  xp: number;
+  badges: string[];
+  createdAt: string | null;
+}
+
 export const api = {
   login: (payload: { email: string; password: string }) =>
     request<AuthResponse>('/auth/login', {
@@ -143,5 +156,16 @@ export const api = {
   getDashboardOverview: (token: string) => request<DashboardOverview>('/users/me/overview', {}, token),
   getMyCourses: (token: string) => request<CourseListResponse>('/users/me/courses', {}, token),
   getMyCertificates: (token: string) => request<CertificateListResponse>('/users/me/certificates', {}, token),
+  getProfile: (token: string) => request<UserProfile>('/users/me/profile', {}, token),
+  updateProfile: (token: string, payload: { firstName?: string; lastName?: string; role?: string; organization?: string; avatarUrl?: string }) =>
+    request<UserProfile>('/users/me/profile', {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    }, token),
+  updateSettings: (token: string, payload: { email?: string; password?: string }) =>
+    request<{ message: string }>('/users/me/settings', {
+      method: 'PATCH',
+      body: JSON.stringify(payload),
+    }, token),
 };
 
