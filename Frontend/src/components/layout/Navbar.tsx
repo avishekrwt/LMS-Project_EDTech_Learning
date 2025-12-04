@@ -10,12 +10,15 @@ import {
 import { Menu, User, X } from "lucide-react"
 import ThemeToggle from "@/components/ThemeToggle"
 import { useAuthModal } from "@/hooks/useAuthModal"
+import { useUserStore } from "@/hooks/useUserStore"
 
 export default function Navbar() {
   const { openSignIn } = useAuthModal()
+  const user = useUserStore((state) => state.user)
+  const profile = useUserStore((state) => state.profile)
+  const clearUser = useUserStore((state) => state.clearUser)
   const navigate = useNavigate()
   const [isMenuOpen, setIsMenuOpen] = useState(false)
-  const [isLoggedIn, setIsLoggedIn] = useState(false)
   const [coursesDropdownOpen, setCoursesDropdownOpen] = useState(false)
   const [coursesDropdownClicked, setCoursesDropdownClicked] = useState(false)
   const [isNavbarVisible, setIsNavbarVisible] = useState(true)
@@ -101,7 +104,7 @@ export default function Navbar() {
 
         {/* Desktop Menu */}
         <div className="hidden md:flex flex-1 items-center justify-end space-x-1">
-          {!isLoggedIn ? (
+          {!user ? (
             <>
               <NavLink to="/" currentPath={location.pathname}>Home</NavLink>
 
@@ -212,16 +215,19 @@ export default function Navbar() {
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center space-x-2 text-sm font-medium rounded-lg px-3 py-2 hover:bg-accent hover:text-accent-foreground transition-colors duration-200">
                     <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary">
-                      <User size={16} />
+                      {profile?.firstName?.[0] ? profile.firstName[0] : <User size={16} />}
                     </div>
-                    <span>Profile</span>
+                    <span>{profile?.firstName ?? "Profile"}</span>
                   </button>
                 </DropdownMenuTrigger>
                 <DropdownMenuContent align="end" className="z-50 mt-1 w-48 rounded-lg shadow-lg">
                   <DropdownMenuItem className="cursor-pointer hover:bg-accent">My Account</DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer hover:bg-accent">Settings</DropdownMenuItem>
                   <DropdownMenuItem
-                    onClick={() => setIsLoggedIn(false)}
+                    onClick={() => {
+                      clearUser()
+                      navigate("/")
+                    }}
                     className="cursor-pointer text-destructive hover:bg-destructive/10 focus:text-destructive"
                   >
                     Logout
@@ -256,7 +262,7 @@ export default function Navbar() {
       {isMenuOpen && (
         <div ref={mobileMenuRef} className="md:hidden absolute top-full left-0 right-0 bg-background/95 backdrop-blur-md border-b border-border shadow-lg animate-in slide-in-from-top-5 duration-200">
           <div className="flex flex-col space-y-1 px-4 pb-4 pt-2">
-            {!isLoggedIn ? (
+            {!user ? (
               <>
                 <NavLink to="/" currentPath={location.pathname} mobile onClick={() => setIsMenuOpen(false)}>
                   Home
@@ -330,9 +336,9 @@ export default function Navbar() {
                 >
                   <div className="flex items-center space-x-2">
                     <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary">
-                      <User size={16} />
+                      {profile?.firstName?.[0] ? profile.firstName[0] : <User size={16} />}
                     </div>
-                    <span>Profile</span>
+                    <span>{profile?.firstName ?? 'Profile'}</span>
                   </div>
                   <svg className={`h-4 w-4 transition-transform ${mobileProfileOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
@@ -354,8 +360,9 @@ export default function Navbar() {
                     </button>
                     <button
                       onClick={() => {
-                        setIsLoggedIn(false)
+                        clearUser()
                         setIsMenuOpen(false)
+                        navigate("/")
                       }}
                       className="relative text-base font-medium w-full text-left rounded-lg px-3 py-2 hover:bg-destructive/10 text-destructive"
                     >

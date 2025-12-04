@@ -8,6 +8,10 @@ import ContactPage from "@/pages/ContactPage";
 import CoursesPage from "@/pages/CoursesPage";
 import SignUpPage from "@/pages/SignUpPage";
 import ComingSoonPage from "@/pages/ComingSoonPage";
+import DashboardPage from "@/pages/DashboardPage";
+import MyCoursesPage from "@/pages/MyCoursesPage";
+import MyCertificatesPage from "@/pages/MyCertificatesPage";
+import ProtectedRoute from "@/components/ProtectedRoute";
 
 
 function App() {
@@ -22,7 +26,30 @@ function App() {
         <Route path="/courses" element={<CoursesPage />} />
         <Route path="/signup" element={<SignUpPage />} />
         <Route path="/coming-soon" element={<ComingSoonPage />} />
-       
+        <Route
+          path="/dashboard"
+          element={
+            <ProtectedRoute>
+              <DashboardPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/my-courses"
+          element={
+            <ProtectedRoute>
+              <MyCoursesPage />
+            </ProtectedRoute>
+          }
+        />
+        <Route
+          path="/certificates"
+          element={
+            <ProtectedRoute>
+              <MyCertificatesPage />
+            </ProtectedRoute>
+          }
+        />
       </Routes>
     </>
   );

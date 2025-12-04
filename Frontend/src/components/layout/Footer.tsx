@@ -6,7 +6,7 @@ export default function Footer() {
     <footer className="border-t border-border py-10 bg-background/90">
       <div className="max-w-6xl mx-auto px-8 flex flex-col md:flex-row items-center justify-between gap-6">
         <div className="text-center md:text-left">
-          <h3 className="text-xl font-bold text-primary">EDTech</h3>
+          <h3 className="text-xl font-bold text-primary">TechZone</h3>
           <p className="text-muted-foreground text-sm">
             Empowering education through technology.
           </p>
@@ -33,7 +33,7 @@ export default function Footer() {
         </div>
 
         <p className="text-xs text-muted-foreground text-center md:text-right">
-          © {new Date().getFullYear()} EDTech. All rights reserved.
+          © {new Date().getFullYear()} TechZone. All rights reserved.
         </p>
       </div>
     </footer>

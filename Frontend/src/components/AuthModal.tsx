@@ -7,15 +7,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { useAuthModal } from "@/hooks/useAuthModal";
+import { useUserStore } from "@/hooks/useUserStore";
+import { api } from "@/services/api";
 
 export default function AuthModal() {
   const { resolvedTheme } = useTheme();
   const theme = resolvedTheme || "light";
   const { isOpen, mode, openSignIn, close } = useAuthModal();
   const navigate = useNavigate();
+  const setUser = useUserStore((state) => state.setUser);
 
   const [showPassword, setShowPassword] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [errorMessage, setErrorMessage] = useState<string | null>(null);
   const modalRef = useRef<HTMLDivElement>(null);
 
   const [signInForm, setSignInForm] = useState({ email: "", password: "" });
@@ -48,12 +52,32 @@ export default function AuthModal() {
   const handleSignInSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setLoading(true);
-    // TODO: Replace with real sign-in logic
-    setTimeout(() => {
-      setLoading(false);
+    setErrorMessage(null);
+    try {
+      const { user, session, profile } = await api.login(signInForm);
+      setUser(
+        { id: user.id, email: user.email },
+        session.access_token,
+        profile
+          ? {
+              firstName: profile.first_name,
+              lastName: profile.last_name,
+              avatarUrl: profile.avatar_url,
+              role: profile.role,
+              organization: profile.organization,
+            }
+          : undefined
+      );
+
       close();
       setSignInForm({ email: "", password: "" });
-    }, 800);
+      navigate("/dashboard");
+    } catch (error) {
+      console.error("Sign in error:", error);
+      setErrorMessage(error instanceof Error ? error.message : "Unable to sign in");
+    } finally {
+      setLoading(false);
+    }
   };
 
   if (!isOpen) return null;
@@ -99,6 +123,12 @@ export default function AuthModal() {
                 <input id="remember" type="checkbox" className={`rounded cursor-pointer accent-blue-600 ${theme === "dark" ? "border-slate-600 bg-slate-800" : "border-gray-300 bg-white"}`} />
                 <Label htmlFor="remember" className="text-sm cursor-pointer font-normal">Keep me signed in</Label>
               </div>
+
+              {errorMessage && (
+                <p className="text-sm text-red-500 bg-red-50 dark:bg-red-500/10 border border-red-200 dark:border-red-500/30 rounded-md px-3 py-2">
+                  {errorMessage}
+                </p>
+              )}
 
               <Button type="submit" disabled={loading} className="w-full bg-gradient-to-r from-blue-600 to-purple-600 hover:from-blue-700 hover:to-purple-700 text-white font-semibold py-2.5 rounded-lg transition-all duration-200 shadow-lg hover:shadow-xl disabled:opacity-70 disabled:cursor-not-allowed">
                 {loading ? (

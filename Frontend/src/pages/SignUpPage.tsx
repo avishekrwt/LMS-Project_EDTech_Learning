@@ -1,10 +1,52 @@
 import React, { useState } from "react";
 import { Eye, EyeOff } from "lucide-react";
-import { url } from "inspector";
+import { useNavigate } from "react-router-dom";
+import { api } from "@/services/api";
 
 export default function NewSignUpPage() {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState<string | null>(null);
+  const navigate = useNavigate();
+
+  const [formData, setFormData] = useState({
+    firstName: "",
+    lastName: "",
+    email: "",
+    password: "",
+    confirmPassword: "",
+  });
+
+  const handleChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    setFormData({ ...formData, [e.target.name]: e.target.value });
+  };
+
+  const handleSignUpSubmit = async (e: React.FormEvent) => {
+    e.preventDefault();
+    if (formData.password !== formData.confirmPassword) {
+      alert("Passwords do not match!");
+      return;
+    }
+    setLoading(true);
+    setError(null);
+    try {
+      await api.signup({
+        email: formData.email,
+        password: formData.password,
+        firstName: formData.firstName,
+        lastName: formData.lastName,
+      });
+      alert("Sign up successful! Please sign in.");
+      navigate("/");
+    } catch (error) {
+      console.error("Sign up error:", error);
+      setError(error instanceof Error ? error.message : "Sign up failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
 
   return (
     <div className="h-screen flex items-center justify-center bg-gradient-to-b from-background via-accent/10 to-background p-4 md:p-6 overflow-hidden">
@@ -33,14 +75,17 @@ export default function NewSignUpPage() {
           <h2 className="text-4xl font-bold mb-3 text-foreground">Register</h2>
           <p className="mb-8 text-muted-foreground text-base">Create your account. It's free and takes a minute.</p>
 
-          <form className="space-y-6">
+          <form className="space-y-6" onSubmit={handleSignUpSubmit}>
             {/* Name Row */}
             <div className="grid grid-cols-2 gap-4">
               <div>
                 <label className="block text-sm font-medium text-foreground mb-2">First Name</label>
                 <input
                   type="text"
+                  name="firstName"
                   placeholder="First Name"
+                  value={formData.firstName}
+                  onChange={handleChange}
                   className="border border-border rounded-lg p-3 w-full bg-background text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 />
               </div>
@@ -48,7 +93,10 @@ export default function NewSignUpPage() {
                 <label className="block text-sm font-medium text-foreground mb-2">Last Name</label>
                 <input
                   type="text"
+                  name="lastName"
                   placeholder="Last Name"
+                  value={formData.lastName}
+                  onChange={handleChange}
                   className="border border-border rounded-lg p-3 w-full bg-background text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 />
               </div>
@@ -59,7 +107,10 @@ export default function NewSignUpPage() {
               <label className="block text-sm font-medium text-foreground mb-2">Email Address</label>
               <input
                 type="email"
+                name="email"
                 placeholder="your@email.com"
+                value={formData.email}
+                onChange={handleChange}
                 className="border border-border rounded-lg p-3 w-full bg-background text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
               />
             </div>
@@ -70,7 +121,10 @@ export default function NewSignUpPage() {
               <div className="relative">
                 <input
                   type={showPassword ? "text" : "password"}
+                  name="password"
                   placeholder="at least 8 characters"
+                  value={formData.password}
+                  onChange={handleChange}
                   className="border border-border rounded-lg p-3 w-full pr-12 bg-background text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 />
                 <button
@@ -89,7 +143,10 @@ export default function NewSignUpPage() {
               <div className="relative">
                 <input
                   type={showConfirmPassword ? "text" : "password"}
+                  name="confirmPassword"
                   placeholder="same as above"
+                  value={formData.confirmPassword}
+                  onChange={handleChange}
                   className="border border-border rounded-lg p-3 w-full pr-12 bg-background text-foreground placeholder-muted-foreground focus:ring-2 focus:ring-primary focus:border-transparent transition-all"
                 />
                 <button
@@ -111,12 +168,20 @@ export default function NewSignUpPage() {
               </span>
             </label>
 
+            {/* Error */}
+            {error && (
+              <p className="text-sm text-red-500 bg-red-50 border border-red-200 rounded-lg p-3">
+                {error}
+              </p>
+            )}
+
             {/* Button */}
             <button
               type="submit"
-              className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-lg font-semibold shadow-lg transition-all hover:shadow-xl mt-8"
+              disabled={loading}
+              className="w-full bg-primary hover:bg-primary/90 text-white py-3 rounded-lg font-semibold shadow-lg transition-all hover:shadow-xl mt-8 disabled:opacity-70"
             >
-              Register Now
+              {loading ? "Registering..." : "Register Now"}
             </button>
           </form>
         </div>

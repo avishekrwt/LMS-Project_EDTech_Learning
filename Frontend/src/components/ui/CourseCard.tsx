@@ -1,4 +1,4 @@
-import React from 'react'
+import React from "react"
 
 export type Course = {
   id: number
@@ -13,11 +13,16 @@ export default function CourseCard({ course }: { course: Course }) {
     <article className="border rounded-lg p-4 shadow-sm bg-white dark:bg-gray-800">
       <div className="flex items-start justify-between">
         <div>
-          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">{course.title}</h3>
+          <h3 className="text-lg font-semibold text-gray-900 dark:text-gray-100">
+            {course.title}
+          </h3>
           <p className="text-sm text-gray-500 dark:text-gray-300">{course.dept}</p>
         </div>
       </div>
-      <p className="mt-3 text-sm text-gray-600 dark:text-gray-300">{course.description}</p>
+
+      <p className="mt-3 text-sm text-gray-600 dark:text-gray-300">
+        {course.description}
+      </p>
 
       {course.tags && course.tags.length > 0 && (
         <div className="mt-3 flex flex-wrap gap-2">
