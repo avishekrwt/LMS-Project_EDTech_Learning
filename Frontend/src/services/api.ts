@@ -66,6 +66,8 @@ export interface DashboardOverview {
     completedCourses: number;
     certificatesEarned: number;
     learningHours: number;
+    streak: number;
+    weeklyFocus: number[];
   };
   activeCourses: Array<{
     id: string | number;

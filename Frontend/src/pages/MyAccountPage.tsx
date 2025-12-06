@@ -24,8 +24,6 @@ export default function MyAccountPage() {
   const [formData, setFormData] = useState({
     firstName: '',
     lastName: '',
-    role: '',
-    organization: '',
   });
 
   useEffect(() => {
@@ -46,8 +44,6 @@ export default function MyAccountPage() {
         setFormData({
           firstName: data.firstName || '',
           lastName: data.lastName || '',
-          role: data.role || '',
-          organization: data.organization || '',
         });
       })
       .catch((err) => {
@@ -80,8 +76,6 @@ export default function MyAccountPage() {
       const updated = await api.updateProfile(token, {
         firstName: formData.firstName,
         lastName: formData.lastName,
-        role: formData.role,
-        organization: formData.organization,
       });
 
       setProfile(updated);
@@ -223,52 +217,69 @@ export default function MyAccountPage() {
             <CardHeader>
               <CardTitle className="flex items-center gap-2">
                 <Briefcase className="h-5 w-5" />
-                Professional Information
+                Account Information
               </CardTitle>
             </CardHeader>
             <CardContent>
-              <form onSubmit={handleSubmit} className="space-y-4">
+              <div className="space-y-4">
                 <div className="space-y-2">
-                  <Label htmlFor="role">Role</Label>
+                  <Label>Role</Label>
                   <Input
-                    id="role"
-                    name="role"
-                    value={formData.role}
-                    onChange={handleChange}
-                    placeholder="e.g., Student, Teacher, Developer"
+                    value={profile?.role || 'Student'}
+                    disabled
+                    className="bg-muted"
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Role is managed by administrators
+                  </p>
                 </div>
 
                 <div className="space-y-2">
-                  <Label htmlFor="organization">Organization</Label>
+                  <Label>Organization</Label>
                   <Input
-                    id="organization"
-                    name="organization"
-                    value={formData.organization}
-                    onChange={handleChange}
-                    placeholder="e.g., TechZone LMS"
+                    value={profile?.organization || 'TechZone LMS'}
+                    disabled
+                    className="bg-muted"
                   />
+                  <p className="text-xs text-muted-foreground">
+                    Organization is managed by administrators
+                  </p>
                 </div>
 
-                <div className="pt-4 space-y-3">
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Award className="h-4 w-4" />
-                    <span>XP Points: <strong className="text-foreground">{profile?.xp || 0}</strong></span>
+                <div className="pt-4 space-y-3 border-t">
+                  <div className="flex items-center gap-2 text-sm">
+                    <Award className="h-4 w-4 text-amber-500" />
+                    <span className="text-muted-foreground">XP Points:</span>
+                    <strong className="text-foreground">{profile?.xp || 0}</strong>
                   </div>
-                  <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                    <Award className="h-4 w-4" />
-                    <span>Badges: <strong className="text-foreground">{profile?.badges?.length || 0}</strong></span>
+                  <div className="flex items-center gap-2 text-sm">
+                    <Award className="h-4 w-4 text-purple-500" />
+                    <span className="text-muted-foreground">Badges:</span>
+                    <strong className="text-foreground">{profile?.badges?.length || 0}</strong>
+                    {profile?.badges && profile.badges.length > 0 && (
+                      <div className="flex flex-wrap gap-1 ml-2">
+                        {profile.badges.slice(0, 3).map((badge, idx) => (
+                          <span key={idx} className="text-xs px-2 py-0.5 rounded-full bg-primary/10 text-primary">
+                            {badge}
+                          </span>
+                        ))}
+                        {profile.badges.length > 3 && (
+                          <span className="text-xs text-muted-foreground">+{profile.badges.length - 3}</span>
+                        )}
+                      </div>
+                    )}
                   </div>
                   {profile?.createdAt && (
-                    <div className="flex items-center gap-2 text-sm text-muted-foreground">
-                      <Mail className="h-4 w-4" />
-                      <span>Member since: <strong className="text-foreground">
+                    <div className="flex items-center gap-2 text-sm">
+                      <Mail className="h-4 w-4 text-blue-500" />
+                      <span className="text-muted-foreground">Member since:</span>
+                      <strong className="text-foreground">
                         {new Date(profile.createdAt).toLocaleDateString()}
-                      </strong></span>
+                      </strong>
                     </div>
                   )}
                 </div>
-              </form>
+              </div>
             </CardContent>
           </Card>
         </div>

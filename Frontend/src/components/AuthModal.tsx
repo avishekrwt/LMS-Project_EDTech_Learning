@@ -1,7 +1,7 @@
 import { useState, useEffect, useRef } from "react";
 import { useTheme } from "next-themes";
 import { useNavigate } from "react-router-dom";
-import { Eye, EyeOff } from "lucide-react";
+import { Eye, EyeOff, X } from "lucide-react";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -91,7 +91,18 @@ export default function AuthModal() {
       <div ref={modalRef} className="relative w-full max-w-md mx-auto">
         <Card className={`border-0 shadow-2xl rounded-2xl overflow-hidden ${theme === "dark" ? "bg-slate-900 text-white" : "bg-white"}`}>
           <div className="h-1.5 bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500" />
-          <CardHeader className="space-y-2 pb-4 pt-6">
+          <CardHeader className="space-y-2 pb-4 pt-6 relative">
+            <button
+              onClick={close}
+              className={`absolute top-4 right-4 p-1.5 rounded-full transition-colors ${
+                theme === "dark" 
+                  ? "hover:bg-slate-800 text-gray-400 hover:text-white" 
+                  : "hover:bg-gray-100 text-gray-500 hover:text-gray-700"
+              }`}
+              aria-label="Close modal"
+            >
+              <X className="h-5 w-5" />
+            </button>
             <div className="flex items-center justify-center mb-2">
               <img src="/techzoneLogo.png" alt="TechZone Logo" className="h-14 w-auto object-contain transition-all duration-300 hover:scale-105 filter drop-shadow-sm" />
             </div>

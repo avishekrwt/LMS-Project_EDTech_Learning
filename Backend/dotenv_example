@@ -1,0 +1,4 @@
+PORT=####_on which port is your project being displayed
+SUPABASE_URL=https://**********************.supabase.co
+SUPABASE_ANON_KEY=############################_GET key from supabase project settings_################################
+SUPABASE_SERVICE_ROLE_KEY=******************************_Get key from supabase project settings_******************************

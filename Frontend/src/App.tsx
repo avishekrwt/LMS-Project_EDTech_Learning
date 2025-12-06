@@ -2,6 +2,7 @@
 import { Routes, Route } from "react-router-dom";
 import Navbar from "@/components/layout/Navbar";
 import AuthModal from "@/components/AuthModal";
+import SessionManager from "@/components/SessionManager";
 import LandingPage from "@/pages/LandingPage";
 import AboutPage from "@/pages/AboutPage";
 import ContactPage from "@/pages/ContactPage";
@@ -19,6 +20,7 @@ import ProtectedRoute from "@/components/ProtectedRoute";
 function App() {
   return (
     <>
+      <SessionManager />
       <Navbar />
       <AuthModal />
       <Routes>

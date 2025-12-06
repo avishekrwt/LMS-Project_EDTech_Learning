@@ -1,11 +1,11 @@
-import { useEffect, useMemo, useState } from 'react';
-import { ArrowUpRight, Award, Crown, Download, Loader2, Medal } from 'lucide-react';
-import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Button } from '@/components/ui/button';
-import { api, CertificateListResponse } from '@/services/api';
-import { useUserStore } from '@/hooks/useUserStore';
+import { useEffect, useMemo, useState } from "react";
+import { ArrowUpRight, Award, Crown, Download, Loader2, Medal } from "lucide-react";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
+import { Button } from "@/components/ui/button";
+import { api, CertificateListResponse } from "@/services/api";
+import { useUserStore } from "@/hooks/useUserStore";
 
-type Certificate = CertificateListResponse['certificates'][number];
+type Certificate = CertificateListResponse["certificates"][number];
 
 export default function MyCertificatesPage() {
   const token = useUserStore((state) => state.token);
@@ -15,6 +15,7 @@ export default function MyCertificatesPage() {
 
   useEffect(() => {
     if (!token) return;
+
     let isMounted = true;
     setLoading(true);
     setError(null);
@@ -22,16 +23,14 @@ export default function MyCertificatesPage() {
     api
       .getMyCertificates(token)
       .then((payload) => {
-        if (!isMounted) return;
-        setCertificates(payload.certificates ?? []);
+        if (isMounted) setCertificates(payload.certificates ?? []);
       })
       .catch((err) => {
         if (!isMounted) return;
-        setError(err instanceof Error ? err.message : 'Unable to load certificates');
+        setError(err instanceof Error ? err.message : "Unable to load certificates");
       })
       .finally(() => {
-        if (!isMounted) return;
-        setLoading(false);
+        if (isMounted) setLoading(false);
       });
 
     return () => {
@@ -40,128 +39,184 @@ export default function MyCertificatesPage() {
   }, [token]);
 
   const summary = useMemo(() => {
-    const totalHours = certificates.reduce((acc, cert) => acc + (cert.hours ?? 0), 0);
-    const topGrade = certificates.reduce((acc, cert) => (cert.grade && cert.grade > acc ? cert.grade : acc), '');
+    const totalHours = certificates.reduce((a, c) => a + (c.hours ?? 0), 0);
+    const topGrade = certificates.reduce(
+      (a, c) => (c.grade && c.grade > a ? c.grade : a),
+      ""
+    );
     return { totalHours, topGrade };
   }, [certificates]);
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-black pb-16 pt-12 text-white">
-      <div className="mx-auto w-full max-w-6xl space-y-8 px-4 sm:px-6 lg:px-0">
-        <header className="rounded-3xl bg-gradient-to-r from-amber-500/20 via-pink-500/10 to-purple-600/20 p-8 shadow-2xl ring-1 ring-white/10">
-          <div className="flex flex-col gap-6 lg:flex-row lg:items-center lg:justify-between">
+    <div className="min-h-screen pb-16 pt-12 bg-gradient-to-b 
+      from-gray-50 via-white to-gray-100 
+      dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 
+      text-gray-900 dark:text-white">
+
+      <div className="mx-auto max-w-6xl w-full space-y-10 px-4 sm:px-6">
+
+        {/* HEADER */}
+        <header className="rounded-3xl p-8 shadow-2xl ring-1 ring-white/10 backdrop-blur 
+          bg-gradient-to-r from-indigo-600/30 via-purple-600/20 to-blue-600/30">
+
+          <div className="flex flex-col lg:flex-row lg:justify-between lg:items-center gap-8">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-white/70">Credential wallet</p>
-              <h1 className="mt-2 text-4xl font-bold leading-tight md:text-5xl">Showcase your verified mastery</h1>
-              <p className="mt-3 max-w-2xl text-base text-white/70">
-                Every certificate is securely stored via Supabase and ready to download, verify, and share with one click.
+              <p className="uppercase text-sm tracking-[0.3em] text-white/70">
+                Credential Wallet
+              </p>
+              <h1 className="text-4xl md:text-5xl font-bold tracking-tight mt-2">
+                Showcase your verified mastery
+              </h1>
+              <p className="text-white/70 mt-3 max-w-2xl">
+                Every certificate is securely stored via Supabase and ready to verify, download,
+                and share with confidence.
               </p>
             </div>
-            <Button className="rounded-full bg-white text-black hover:bg-white/90" onClick={() => window.print()}>
-              Download transcript
-              <Download className="h-4 w-4" />
+
+            <Button className="rounded-full bg-white text-black hover:bg-white/90"
+              onClick={() => window.print()}>
+              Download Transcript <Download className="h-4 w-4" />
             </Button>
           </div>
         </header>
 
-        <section className="grid gap-5 md:grid-cols-3">
-          <Card className="border-white/10 bg-white/5 text-white">
-            <CardContent className="flex items-center gap-4 pt-6">
-              <div className="rounded-2xl bg-amber-500/20 p-3">
-                <Award className="h-6 w-6 text-amber-300" />
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-white/60">Total certificates</p>
-                <p className="text-3xl font-semibold">{certificates.length}</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-white/10 bg-white/5 text-white">
-            <CardContent className="flex items-center gap-4 pt-6">
-              <div className="rounded-2xl bg-pink-500/20 p-3">
-                <Crown className="h-6 w-6 text-pink-300" />
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-white/60">Hours earned</p>
-                <p className="text-3xl font-semibold">{summary.totalHours}</p>
-              </div>
-            </CardContent>
-          </Card>
-          <Card className="border-white/10 bg-white/5 text-white">
-            <CardContent className="flex items-center gap-4 pt-6">
-              <div className="rounded-2xl bg-purple-500/20 p-3">
-                <Medal className="h-6 w-6 text-purple-300" />
-              </div>
-              <div>
-                <p className="text-xs uppercase tracking-[0.3em] text-white/60">Top grade</p>
-                <p className="text-3xl font-semibold">{summary.topGrade || '—'}</p>
-              </div>
-            </CardContent>
-          </Card>
+        {/* SUMMARY CARDS */}
+        <section className="grid gap-6 md:grid-cols-3">
+          {[
+            {
+              label: "Total Certificates",
+              icon: Award,
+              value: certificates.length,
+              accent: "bg-amber-500/20 text-amber-300",
+            },
+            {
+              label: "Hours Earned",
+              icon: Crown,
+              value: summary.totalHours,
+              accent: "bg-pink-500/20 text-pink-300",
+            },
+            {
+              label: "Top Grade",
+              icon: Medal,
+              value: summary.topGrade || "—",
+              accent: "bg-purple-500/20 text-purple-300",
+            },
+          ].map((item) => (
+            <Card
+              key={item.label}
+              className="rounded-2xl border border-gray-200/50 dark:border-white/10 
+                bg-gray-50/50 dark:bg-white/5 shadow-lg ring-1 
+                ring-gray-300/20 dark:ring-black/10"
+            >
+              <CardContent className="pt-6 flex items-center gap-4">
+                <div className={`rounded-2xl p-3 ${item.accent}`}>
+                  <item.icon className="h-6 w-6" />
+                </div>
+                <div>
+                  <p className="uppercase text-xs tracking-[0.3em] text-gray-600 dark:text-white/60">
+                    {item.label}
+                  </p>
+                  <p className="text-3xl font-semibold text-gray-900 dark:text-white">
+                    {item.value}
+                  </p>
+                </div>
+              </CardContent>
+            </Card>
+          ))}
         </section>
 
+        {/* EMPTY / ERROR / LOADING STATES */}
         {loading ? (
-          <div className="flex min-h-[30vh] items-center justify-center text-white/80">
-            <Loader2 className="mr-3 h-6 w-6 animate-spin" />
-            Fetching verified credentials…
+          <div className="flex items-center justify-center min-h-[30vh]">
+            <Loader2 className="h-6 w-6 animate-spin text-blue-500 dark:text-sky-300 mr-3" />
+            <span className="text-gray-700 dark:text-white/80">
+              Fetching credentials…
+            </span>
           </div>
         ) : error ? (
-          <Card className="border-red-500/40 bg-red-500/10 text-red-100">
-            <CardHeader>
-              <CardTitle>Unable to load certificates</CardTitle>
-            </CardHeader>
-            <CardContent>
-              <p>{error}</p>
-              <p className="mt-2 text-sm text-red-200/80">Ensure the Supabase `certificates` table contains records for this user.</p>
-            </CardContent>
+          <Card className="border-red-500/40 bg-red-500/10 text-red-100 p-6">
+            <p className="font-semibold">Unable to load certificates</p>
+            <p className="text-sm mt-1">{error}</p>
           </Card>
         ) : certificates.length === 0 ? (
-          <Card className="border-white/10 bg-white/5 text-white">
-            <CardContent className="py-16 text-center">
-              <p className="text-lg font-semibold">No certificates yet</p>
-              <p className="mt-2 text-sm text-white/70">Complete a course to unlock your first credential.</p>
-            </CardContent>
+          <Card className="rounded-2xl border border-gray-200/50 dark:border-white/10 
+            bg-gray-50/50 dark:bg-white/5 shadow-lg ring-1 
+            ring-gray-300/20 dark:ring-black/10 p-16 text-center">
+            <p className="text-lg font-semibold">No certificates yet</p>
+            <p className="text-sm text-gray-500 dark:text-white/70 mt-2">
+              Complete a course to unlock your first credential.
+            </p>
           </Card>
         ) : (
-          <div className="grid gap-6 md:grid-cols-2">
-            {certificates.map((certificate) => (
-              <Card key={certificate.id} className="border-white/10 bg-gradient-to-br from-white/5 to-transparent text-white">
+          <div className="grid md:grid-cols-2 gap-6">
+            {certificates.map((c) => (
+              <Card
+                key={c.id}
+                className="rounded-2xl border border-gray-200/50 dark:border-white/10 
+                  bg-gray-50/50 dark:bg-white/5 shadow-lg ring-1 
+                  ring-gray-300/20 dark:ring-black/10"
+              >
                 <CardHeader className="space-y-2">
                   <div className="flex items-center justify-between">
-                    <CardTitle className="text-lg font-semibold">{certificate.course?.title ?? 'Course credential'}</CardTitle>
-                    <span className="inline-flex items-center gap-1 text-xs uppercase tracking-[0.3em] text-white/70">
-                      {certificate.grade ?? 'Score'}
-                      <ArrowUpRight className="h-3 w-3" />
+                    <CardTitle className="text-lg">
+                      {c.course?.title ?? "Course Credential"}
+                    </CardTitle>
+                    <span className="text-xs flex items-center gap-1 uppercase tracking-[0.3em] text-gray-600 dark:text-white/60">
+                      {c.grade ?? "Score"} <ArrowUpRight className="h-3 w-3" />
                     </span>
                   </div>
-                  <p className="text-sm text-white/60">
-                    {certificate.course?.category ?? 'Track'} • {certificate.course?.level ?? 'Level'}
+
+                  <p className="text-sm text-gray-600 dark:text-white/70">
+                    {c.course?.category ?? "Track"} • {c.course?.level ?? "Level"}
                   </p>
                 </CardHeader>
-                <CardContent className="space-y-4">
-                  <div className="rounded-2xl border border-dashed border-white/20 bg-white/5 p-4">
-                    <p className="text-xs uppercase tracking-[0.3em] text-white/60">Credential ID</p>
-                    <p className="mt-2 text-xl font-semibold">{certificate.credentialId}</p>
-                    <p className="text-xs text-white/60">Issued {certificate.issuedOn ? new Date(certificate.issuedOn).toLocaleDateString() : '—'}</p>
+
+                <CardContent className="space-y-5">
+                  <div className="rounded-2xl border border-dashed border-gray-300/50 dark:border-white/20 
+                    bg-white/40 dark:bg-white/5 p-4">
+                    <p className="text-xs uppercase tracking-[0.3em] text-gray-600 dark:text-white/60">
+                      Credential ID
+                    </p>
+                    <p className="mt-2 text-xl font-semibold">
+                      {c.credentialId}
+                    </p>
+                    <p className="text-xs text-gray-600 dark:text-white/60">
+                      Issued:{" "}
+                      {c.issuedOn
+                        ? new Date(c.issuedOn).toLocaleDateString()
+                        : "—"}
+                    </p>
                   </div>
-                  <div className="flex flex-wrap items-center gap-3 text-xs uppercase tracking-[0.3em] text-white/70">
-                    <span className="rounded-full border border-white/20 px-3 py-1">{certificate.hours ?? 0} hrs</span>
-                    {certificate.badgeUrl && (
-                      <span className="rounded-full border border-white/20 px-3 py-1">Badge ready</span>
+
+                  <div className="flex flex-wrap gap-3 text-xs uppercase tracking-[0.3em] text-gray-700 dark:text-white/70">
+                    <span className="px-3 py-1 rounded-full border border-gray-300/50 dark:border-white/20">
+                      {c.hours ?? 0} hrs
+                    </span>
+
+                    {c.badgeUrl && (
+                      <span className="px-3 py-1 rounded-full border border-gray-300/50 dark:border-white/20">
+                        Badge Ready
+                      </span>
                     )}
                   </div>
+
                   <div className="flex gap-3">
-                    {certificate.certificateUrl && (
-                      <Button asChild className="flex-1 bg-white text-black hover:bg-white/90">
-                        <a href={certificate.certificateUrl} target="_blank" rel="noreferrer">
-                          View credential
+                    {c.certificateUrl && (
+                      <Button className="flex-1 bg-white text-black hover:bg-white/90" asChild>
+                        <a href={c.certificateUrl} target="_blank">
+                          View Credential
                         </a>
                       </Button>
                     )}
-                    {certificate.badgeUrl && (
-                      <Button asChild variant="outline" className="flex-1 border-white/30 text-white hover:bg-white/10">
-                        <a href={certificate.badgeUrl} target="_blank" rel="noreferrer">
-                          Open badge
+
+                    {c.badgeUrl && (
+                      <Button
+                        variant="outline"
+                        className="flex-1 border-gray-300 dark:border-white/20 text-gray-700 dark:text-white hover:bg-gray-200/50 dark:hover:bg-white/10"
+                        asChild
+                      >
+                        <a href={c.badgeUrl} target="_blank">
+                          Open Badge
                         </a>
                       </Button>
                     )}
@@ -175,4 +230,3 @@ export default function MyCertificatesPage() {
     </div>
   );
 }
-

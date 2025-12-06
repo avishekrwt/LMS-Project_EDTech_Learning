@@ -96,26 +96,28 @@ export default function DashboardPage() {
   const badges = overview?.profile.badges ?? [];
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-slate-950 via-slate-900 to-slate-950 pb-16 pt-10 text-white">
+    <div className="min-h-screen bg-gradient-to-b from-gray-50 via-white to-gray-100 dark:from-slate-950 dark:via-slate-900 dark:to-slate-950 pb-16 pt-10 text-gray-900 dark:text-white">
       <div className="mx-auto w-full max-w-6xl space-y-8 px-4 sm:px-6 lg:px-0">
-        <header className="flex flex-col gap-6 rounded-3xl bg-gradient-to-r from-indigo-600/30 via-purple-600/20 to-blue-600/30 p-8 shadow-2xl ring-1 ring-white/10 backdrop-blur">
+        <header className="flex flex-col gap-6 rounded-3xl bg-gradient-to-r from-indigo-600/30 via-purple-600/20 to-blue-600/30 p-8 shadow-2xl ring-1 ring-white/10 dark:ring-white/10 ring-gray-300/10 backdrop-blur">
           <div className="flex flex-col justify-between gap-6 md:flex-row md:items-center">
             <div>
-              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-white/60">Personalized dashboard</p>
+              <p className="text-sm font-semibold uppercase tracking-[0.3em] text-gray-600 dark:text-white/60">Personalized dashboard</p>
               <h1 className="mt-2 text-4xl font-bold tracking-tight md:text-5xl">
-                Welcome back, <span className="text-sky-300">{displayName}</span>
+                Welcome back, <span className="text-sky-300 dark:text-sky-300 text-blue-600">{displayName}</span>
               </h1>
-              <p className="mt-2 max-w-2xl text-base text-white/70">
+              <p className="mt-2 max-w-2xl text-base text-gray-700 dark:text-white/70">
                 Continue your learning journey with curated insights, real-time progress, and fresh recommendations powered by Supabase.
               </p>
             </div>
-            <div className="flex items-center gap-3 rounded-2xl bg-white/5 px-6 py-4 text-left shadow-xl">
+            <div className="flex items-center gap-3 rounded-2xl bg-gray-100/50 dark:bg-white/5 px-6 py-4 text-left shadow-xl">
               <div className="rounded-full bg-indigo-500/20 p-3">
-                <Activity className="h-6 w-6 text-sky-300" />
+                <Activity className="h-6 w-6 text-sky-300 dark:text-sky-300 text-blue-500" />
               </div>
               <div>
-                <p className="text-sm uppercase tracking-wide text-white/60">Streak</p>
-                <p className="text-2xl font-semibold text-white">7 days 🔥</p>
+                <p className="text-sm uppercase tracking-wide text-gray-600 dark:text-white/60">Streak</p>
+                <p className="text-2xl font-semibold text-gray-900 dark:text-white">
+                  {overview?.stats.streak ?? 0} {overview?.stats.streak ? 'days 🔥' : 'days'}
+                </p>
               </div>
             </div>
           </div>
@@ -123,8 +125,8 @@ export default function DashboardPage() {
 
         {loading ? (
           <div className="flex min-h-[40vh] items-center justify-center">
-            <div className="flex items-center gap-3 rounded-2xl bg-white/5 px-6 py-4 text-white">
-              <Loader2 className="h-6 w-6 animate-spin text-sky-300" />
+            <div className="flex items-center gap-3 rounded-2xl bg-gray-100/50 dark:bg-white/5 px-6 py-4 text-gray-900 dark:text-white">
+              <Loader2 className="h-6 w-6 animate-spin text-blue-500 dark:text-sky-300" />
               <span className="text-lg font-semibold tracking-wide">Loading your learning graph…</span>
             </div>
           </div>
@@ -147,62 +149,62 @@ export default function DashboardPage() {
               {statsConfig.map((stat) => (
                 <div
                   key={stat.label}
-                  className="rounded-2xl border border-white/10 bg-gradient-to-br from-white/5 to-transparent p-5 shadow-lg ring-1 ring-black/10"
+                  className="rounded-2xl border border-gray-200/50 dark:border-white/10 bg-gradient-to-br from-gray-50/50 to-transparent dark:from-white/5 dark:to-transparent p-5 shadow-lg ring-1 ring-gray-300/20 dark:ring-black/10"
                 >
                   <div className="flex items-center justify-between">
                     <div className={`rounded-2xl bg-gradient-to-r ${stat.accent} p-3 text-white shadow-lg`}>
                       <stat.icon className="h-5 w-5" />
                     </div>
-                    <TrendingUp className="h-4 w-4 text-emerald-300/80" />
+                    <TrendingUp className="h-4 w-4 text-emerald-300/80 dark:text-emerald-300 text-green-500" />
                   </div>
-                  <p className="mt-6 text-sm font-medium uppercase tracking-widest text-white/70">{stat.label}</p>
-                  <p className="mt-2 text-3xl font-semibold">{stat.value}</p>
-                  <p className="mt-1 text-xs text-white/60">{stat.insight}</p>
+                  <p className="mt-6 text-sm font-medium uppercase tracking-widest text-gray-600 dark:text-white/70">{stat.label}</p>
+                  <p className="mt-2 text-3xl font-semibold text-gray-900 dark:text-white">{stat.value}</p>
+                  <p className="mt-1 text-xs text-gray-500 dark:text-white/60">{stat.insight}</p>
                 </div>
               ))}
             </section>
 
             <section className="grid gap-6 lg:grid-cols-[2fr,1fr]">
-              <Card className="border-white/10 bg-white/5 text-white">
+              <Card className="border-gray-200/50 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white">
                 <CardHeader className="flex flex-row items-center justify-between">
                   <div>
                     <CardTitle className="text-xl font-semibold">Active learning paths</CardTitle>
-                    <p className="text-sm text-white/70">Pick up exactly where you left off.</p>
+                    <p className="text-sm text-gray-600 dark:text-white/70">Pick up exactly where you left off.</p>
                   </div>
-                  <Button 
-                    variant="outline" 
-                    className="border-white/30 text-white hover:bg-white/10"
+                  <Button
+                    variant="outline"
+                    className="border-gray-300 dark:border-white/30 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10"
                     onClick={() => window.location.href = '/my-courses'}
                   >
                     View all
                   </Button>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {activeCourses.length === 0 && <p className="text-sm text-white/60">You have no active courses right now.</p>}
+                  {activeCourses.length === 0 && <p className="text-sm text-gray-500 dark:text-white/60">You have no active courses right now.</p>}
 
                   {activeCourses.map((course) => (
-                    <div key={course.id} className="rounded-2xl border border-white/10 bg-white/5 p-4 shadow-sm">
+                    <div key={course.id} className="rounded-2xl border border-gray-200/50 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 p-4 shadow-sm">
                       <div className="flex items-center justify-between gap-4">
                         <div>
-                          <p className="text-xs uppercase tracking-[0.3em] text-white/60">{course.category}</p>
-                          <h3 className="mt-1 text-lg font-semibold">{course.title}</h3>
-                          <p className="text-sm text-white/70">
-                            {course.level} • Last lesson: <span className="text-white">{course.lastLesson}</span>
+                          <p className="text-xs uppercase tracking-[0.3em] text-gray-500 dark:text-white/60">{course.category}</p>
+                          <h3 className="mt-1 text-lg font-semibold text-gray-900 dark:text-white">{course.title}</h3>
+                          <p className="text-sm text-gray-600 dark:text-white/70">
+                            {course.level} • Last lesson: <span className="text-gray-900 dark:text-white">{course.lastLesson}</span>
                           </p>
                         </div>
                         {course.thumbnail ? (
-                          <img src={course.thumbnail} alt={course.title} className="h-16 w-24 rounded-xl object-cover ring-2 ring-white/20" />
+                          <img src={course.thumbnail} alt={course.title} className="h-16 w-24 rounded-xl object-cover ring-2 ring-gray-300/50 dark:ring-white/20" />
                         ) : (
-                          <div className="flex h-16 w-24 items-center justify-center rounded-xl bg-white/10 text-white/40">No cover</div>
+                          <div className="flex h-16 w-24 items-center justify-center rounded-xl bg-gray-200/50 dark:bg-white/10 text-gray-500 dark:text-white/40">No cover</div>
                         )}
                       </div>
 
                       <div className="mt-4">
-                        <div className="flex items-center justify-between text-xs text-white/60">
+                        <div className="flex items-center justify-between text-xs text-gray-500 dark:text-white/60">
                           <span>Progress</span>
                           <span>{Math.round(course.progress)}%</span>
                         </div>
-                        <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-white/10">
+                        <div className="mt-2 h-2 w-full overflow-hidden rounded-full bg-gray-200/50 dark:bg-white/10">
                           <div
                             className="h-full rounded-full bg-gradient-to-r from-sky-400 via-indigo-400 to-purple-500"
                             style={{ width: `${course.progress}%` }}
@@ -210,12 +212,12 @@ export default function DashboardPage() {
                         </div>
                       </div>
 
-                      <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-white/70">
-                        <span className="inline-flex items-center gap-1 rounded-full border border-white/15 px-3 py-1">
+                      <div className="mt-4 flex flex-wrap items-center gap-3 text-xs text-gray-600 dark:text-white/70">
+                        <span className="inline-flex items-center gap-1 rounded-full border border-gray-300/50 dark:border-white/15 px-3 py-1">
                           <Clock3 className="h-3 w-3" />
                           Last accessed {course.lastLesson}
                         </span>
-                        <Button size="sm" className="rounded-full bg-white/20 px-4 text-white hover:bg-white/30">
+                        <Button size="sm" className="rounded-full bg-gray-200/50 dark:bg-white/20 px-4 text-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-white/30">
                           Continue
                         </Button>
                       </div>
@@ -225,18 +227,18 @@ export default function DashboardPage() {
               </Card>
 
               <div className="space-y-6">
-                <Card className="border-white/10 bg-white/5 text-white">
+                <Card className="border-gray-200/50 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white">
                   <CardHeader className="pb-4">
                     <CardTitle className="flex items-center gap-2 text-lg">
-                      <Sparkles className="h-5 w-5 text-sky-300" />
+                      <Sparkles className="h-5 w-5 text-blue-500 dark:text-sky-300" />
                       Skill highlights
                     </CardTitle>
-                    <p className="text-sm text-white/70">Top badges you&apos;ve earned recently.</p>
+                    <p className="text-sm text-gray-600 dark:text-white/70">Top badges you&apos;ve earned recently.</p>
                   </CardHeader>
                   <CardContent className="flex flex-wrap gap-3">
-                    {badges.length === 0 && <span className="text-sm text-white/60">No badges yet — complete a course to earn your first!</span>}
+                    {badges.length === 0 && <span className="text-sm text-gray-500 dark:text-white/60">No badges yet — complete a course to earn your first!</span>}
                     {badges.map((badge) => (
-                      <span key={badge} className="inline-flex items-center gap-2 rounded-2xl bg-white/10 px-4 py-2 text-sm text-white">
+                      <span key={badge} className="inline-flex items-center gap-2 rounded-2xl bg-gray-200/50 dark:bg-white/10 px-4 py-2 text-sm text-gray-700 dark:text-white">
                         <Award className="h-4 w-4 text-amber-300" />
                         {badge}
                       </span>
@@ -244,31 +246,31 @@ export default function DashboardPage() {
                   </CardContent>
                 </Card>
 
-                <Card className="border-white/10 bg-gradient-to-br from-emerald-500/10 to-sky-500/10 text-white">
+                <Card className="border-gray-200/50 dark:border-white/10 bg-gradient-to-br from-emerald-500/10 to-sky-500/10 text-gray-900 dark:text-white">
                   <CardHeader className="pb-4">
                     <CardTitle className="flex items-center gap-2 text-lg">
                       <ShieldCheck className="h-5 w-5 text-emerald-300" />
                       Certificates
                     </CardTitle>
-                    <p className="text-sm text-white/70">Latest verified achievements.</p>
+                    <p className="text-sm text-gray-600 dark:text-white/70">Latest verified achievements.</p>
                   </CardHeader>
                   <CardContent className="space-y-4">
-                    {certificates.length === 0 && <p className="text-sm text-white/70">Complete courses to earn verifiable certificates.</p>}
+                    {certificates.length === 0 && <p className="text-sm text-gray-600 dark:text-white/70">Complete courses to earn verifiable certificates.</p>}
                     {certificates.slice(0, 3).map((certificate) => {
                       const credentialLabel = certificate.credential_id ?? (certificate as any).credentialId ?? 'Verified credential';
                       const issuedDate = certificate.issued_on ?? (certificate as any).issuedOn ?? null;
                       return (
-                        <div key={certificate.id} className="rounded-2xl border border-white/10 bg-white/5 p-3">
-                          <p className="text-xs uppercase tracking-[0.3em] text-white/60">{certificate.course?.title}</p>
-                          <p className="mt-2 text-lg font-semibold">{credentialLabel}</p>
+                        <div key={certificate.id} className="rounded-2xl border border-gray-200/50 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 p-3">
+                          <p className="text-xs uppercase tracking-[0.3em] text-gray-500 dark:text-white/60">{certificate.courses?.title}</p>
+                          <p className="mt-2 text-lg font-semibold text-gray-900 dark:text-white">{credentialLabel}</p>
                           {issuedDate && (
-                            <p className="text-xs text-white/60">Issued on {new Date(issuedDate).toLocaleDateString()}</p>
+                            <p className="text-xs text-gray-500 dark:text-white/60">Issued on {new Date(issuedDate).toLocaleDateString()}</p>
                           )}
                         </div>
                       );
                     })}
                     {certificates.length > 0 && (
-                      <Button variant="ghost" className="w-full border border-white/20 text-sm text-white hover:bg-white/10" onClick={() => (window.location.href = '/certificates')}>
+                      <Button variant="ghost" className="w-full border border-gray-300 dark:border-white/20 text-sm text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10" onClick={() => (window.location.href = '/certificates')}>
                         View certificate wallet
                       </Button>
                     )}
@@ -278,24 +280,24 @@ export default function DashboardPage() {
             </section>
 
             <section className="grid gap-6 lg:grid-cols-2">
-              <Card className="border-white/10 bg-white/5 text-white">
+              <Card className="border-gray-200/50 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white">
                 <CardHeader className="flex flex-row items-center justify-between">
                   <CardTitle className="text-lg font-semibold">Recommended next</CardTitle>
-                  <Button variant="outline" className="border-white/20 text-white hover:bg-white/10">
+                  <Button variant="outline" className="border-gray-300 dark:border-white/20 text-gray-700 dark:text-white hover:bg-gray-100 dark:hover:bg-white/10">
                     See all
                   </Button>
                 </CardHeader>
                 <CardContent className="space-y-4">
-                  {recommendations.length === 0 && <p className="text-sm text-white/60">Add courses to your wishlist to see recommendations.</p>}
+                  {recommendations.length === 0 && <p className="text-sm text-gray-500 dark:text-white/60">Add courses to your wishlist to see recommendations.</p>}
                   {recommendations.map((rec) => (
-                    <div key={rec.id} className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                    <div key={rec.id} className="rounded-2xl border border-gray-200/50 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 p-4">
                       <div className="flex items-start justify-between gap-4">
                         <div>
-                          <p className="text-xs uppercase tracking-[0.3em] text-white/60">{rec.category}</p>
-                          <h3 className="mt-1 text-lg font-semibold">{rec.title}</h3>
-                          <p className="text-sm text-white/70">{rec.level}</p>
+                          <p className="text-xs uppercase tracking-[0.3em] text-gray-500 dark:text-white/60">{rec.category}</p>
+                          <h3 className="mt-1 text-lg font-semibold text-gray-900 dark:text-white">{rec.title}</h3>
+                          <p className="text-sm text-gray-600 dark:text-white/70">{rec.level}</p>
                         </div>
-                        <Button size="sm" className="rounded-full bg-white/20 px-4 text-white hover:bg-white/30">
+                        <Button size="sm" className="rounded-full bg-gray-200/50 dark:bg-white/20 px-4 text-gray-700 dark:text-white hover:bg-gray-300 dark:hover:bg-white/30">
                           Enroll
                         </Button>
                       </div>
@@ -304,27 +306,35 @@ export default function DashboardPage() {
                 </CardContent>
               </Card>
 
-              <Card className="border-white/10 bg-white/5 text-white">
+              <Card className="border-gray-200/50 dark:border-white/10 bg-gray-50/50 dark:bg-white/5 text-gray-900 dark:text-white">
                 <CardHeader>
                   <CardTitle className="flex items-center gap-2 text-lg">
-                    <TrendingUp className="h-5 w-5 text-sky-300" />
+                    <TrendingUp className="h-5 w-5 text-blue-500 dark:text-sky-300" />
                     Weekly focus report
                   </CardTitle>
-                  <p className="text-sm text-white/70">Stay on track with personalized focus time.</p>
+                  <p className="text-sm text-gray-600 dark:text-white/70">Stay on track with personalized focus time.</p>
                 </CardHeader>
                 <CardContent>
                   <div className="space-y-4">
-                    {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, index) => (
-                      <div key={day} className="flex items-center gap-4">
-                        <span className="w-10 text-sm text-white/60">{day}</span>
-                        <div className="h-2 flex-1 overflow-hidden rounded-full bg-white/10">
-                          <div
-                            className="h-full rounded-full bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400"
-                            style={{ width: `${Math.max(10, (overview?.stats.learningHours ?? 0) * 5 - index * 3)}%` }}
-                          />
+                    {['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'].map((day, index) => {
+                      const hours = overview?.stats.weeklyFocus?.[index] ?? 0;
+                      const maxHours = Math.max(...(overview?.stats.weeklyFocus ?? [1]), 1);
+                      const percentage = maxHours > 0 ? Math.max(10, (hours / maxHours) * 100) : 10;
+                      return (
+                        <div key={day} className="flex items-center gap-4">
+                          <span className="w-10 text-sm text-gray-500 dark:text-white/60">{day}</span>
+                          <div className="flex-1">
+                            <div className="h-2 overflow-hidden rounded-full bg-gray-200/50 dark:bg-white/10">
+                              <div
+                                className="h-full rounded-full bg-gradient-to-r from-indigo-400 via-purple-400 to-pink-400 transition-all duration-500"
+                                style={{ width: `${percentage}%` }}
+                              />
+                            </div>
+                            <p className="mt-1 text-xs text-gray-400 dark:text-white/50">{hours.toFixed(1)}h</p>
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </CardContent>
               </Card>

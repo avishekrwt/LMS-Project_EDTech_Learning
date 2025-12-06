@@ -1,0 +1,12 @@
+{
+    "name": "lms-root",
+    "private": true,
+    "scripts": {
+      "dev": "concurrently \"npm run dev --prefix Backend\" \"npm run dev --prefix Frontend\""
+    },
+    "dependencies": {
+      "concurrently": "^8.2.0"
+    }
+  }
+  
+  

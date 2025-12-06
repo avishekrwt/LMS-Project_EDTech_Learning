@@ -101,6 +101,57 @@ router.get('/me/overview', async (req: AuthenticatedRequest, res) => {
       return acc + (duration * progress) / 6000;
     }, 0);
 
+    // Calculate streak (consecutive days with learning activity)
+    const today = new Date();
+    today.setHours(0, 0, 0, 0);
+    let streak = 0;
+    let currentDate = new Date(today);
+    
+    // Get all unique access dates from enrollments
+    const accessDates = new Set<string>();
+    enrollments.forEach(e => {
+      if (e.last_accessed_at) {
+        const date = new Date(e.last_accessed_at);
+        date.setHours(0, 0, 0, 0);
+        accessDates.add(date.toISOString().split('T')[0]);
+      }
+    });
+
+    // Count consecutive days backwards from today
+    while (accessDates.has(currentDate.toISOString().split('T')[0])) {
+      streak++;
+      currentDate.setDate(currentDate.getDate() - 1);
+    }
+
+    // Calculate weekly focus report (hours per day for last 7 days)
+    // Array index: 0=Mon, 1=Tue, 2=Wed, 3=Thu, 4=Fri, 5=Sat, 6=Sun
+    const weeklyFocus: number[] = [0, 0, 0, 0, 0, 0, 0];
+    const now = new Date();
+    
+    // Get learning activities for last 7 days
+    for (let i = 0; i < 7; i++) {
+      const checkDate = new Date(now);
+      checkDate.setDate(checkDate.getDate() - (6 - i)); // Go back from today
+      checkDate.setHours(0, 0, 0, 0);
+      const dateStr = checkDate.toISOString().split('T')[0];
+      const dayOfWeek = checkDate.getDay(); // 0 = Sunday, 1 = Monday, etc.
+      const arrayIndex = dayOfWeek === 0 ? 6 : dayOfWeek - 1; // Convert to Mon-Sun index
+      
+      // Calculate hours for this day based on enrollments accessed on this day
+      enrollments.forEach(e => {
+        if (e.last_accessed_at) {
+          const accessDate = new Date(e.last_accessed_at);
+          accessDate.setHours(0, 0, 0, 0);
+          if (accessDate.toISOString().split('T')[0] === dateStr) {
+            const course = e.courses as any;
+            const duration = (course?.duration_minutes) || 0;
+            // Estimate 30 minutes per access session
+            weeklyFocus[arrayIndex] += 0.5;
+          }
+        }
+      });
+    }
+
     const overview = {
       profile: {
         id: profileResult.data?.id || userId,
@@ -117,7 +168,9 @@ router.get('/me/overview', async (req: AuthenticatedRequest, res) => {
         enrolledCourses: enrollments.length,
         completedCourses: completedCourses.length,
         certificatesEarned: certificates.length,
-        learningHours: Number(learningHours.toFixed(1))
+        learningHours: Number(learningHours.toFixed(1)),
+        streak: streak,
+        weeklyFocus: weeklyFocus
       },
 
       activeCourses: enrollments
@@ -320,14 +373,13 @@ router.patch('/me/profile', async (req: AuthenticatedRequest, res) => {
   const userId = getUserId(req, res);
   if (!userId) return;
 
-  const { firstName, lastName, role, organization, avatarUrl } = req.body;
+  const { firstName, lastName, avatarUrl } = req.body;
 
   try {
     const updateData: any = {};
     if (firstName !== undefined) updateData.first_name = firstName;
     if (lastName !== undefined) updateData.last_name = lastName;
-    if (role !== undefined) updateData.role = role;
-    if (organization !== undefined) updateData.organization = organization;
+    // Role and organization are not updatable by users
     if (avatarUrl !== undefined) updateData.avatar_url = avatarUrl;
 
     const { data, error } = await supabaseService
