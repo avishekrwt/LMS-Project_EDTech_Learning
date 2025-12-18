@@ -249,9 +249,11 @@ function CourseCard({ course }: { course: Course }) {
       </CardContent>
 
       <div className="px-6 pb-6">
-        <Button className="w-full" size="sm">
-          Enroll Now
-        </Button>
+        <Link to={`/courses/${course.id}`}>
+          <Button className="w-full" size="sm">
+            Enroll Now
+          </Button>
+        </Link>
       </div>
     </Card>
   )

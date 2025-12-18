@@ -7,10 +7,44 @@ import {
   DropdownMenuItem,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { Menu, User, X } from "lucide-react"
+import { Menu, User, X, LogOut } from "lucide-react"
 import ThemeToggle from "@/components/ThemeToggle"
 import { useAuthModal } from "@/hooks/useAuthModal"
 import { useUserStore } from "@/hooks/useUserStore"
+
+/* Reusable Link Component with active state */
+function NavLink({
+  to,
+  children,
+  currentPath,
+  mobile,
+  onClick,
+}: {
+  to: string
+  children: React.ReactNode
+  currentPath?: string
+  mobile?: boolean
+  onClick?: () => void
+}) {
+  const isActive = currentPath === to
+  const baseClasses = mobile
+    ? "text-foreground relative text-base font-medium w-full text-left rounded-lg px-3 py-2.5 hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
+    : "text-foreground relative text-sm font-medium rounded-lg px-3 py-2 hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
+  const activeClasses = isActive
+    ? " text-primary bg-accent/80 font-semibold"
+    : ""
+
+  return (
+    <Link
+      to={to}
+      onClick={onClick}
+      aria-current={isActive ? "page" : undefined}
+      className={`${baseClasses}${activeClasses}`}
+    >
+      {children}
+    </Link>
+  )
+}
 
 export default function Navbar() {
   const { openSignIn } = useAuthModal()
@@ -24,6 +58,7 @@ export default function Navbar() {
   const [isNavbarVisible, setIsNavbarVisible] = useState(true)
   const [mobileCoursesOpen, setMobileCoursesOpen] = useState(false)
   const [mobileProfileOpen, setMobileProfileOpen] = useState(false)
+  const [isDashboardMode, setIsDashboardMode] = useState(true) // Toggle between dashboard and main navbar
   const location = useLocation()
   const mobileMenuRef = useRef<HTMLDivElement>(null)
   const mobileMenuButtonRef = useRef<HTMLButtonElement>(null)
@@ -84,6 +119,14 @@ export default function Navbar() {
       }
     }
   }, [])
+
+  // Set navbar mode based on current path when user is logged in
+  useEffect(() => {
+    if (user) {
+      const dashboardPaths = ['/dashboard', '/my-courses', '/certificates']
+      setIsDashboardMode(dashboardPaths.includes(location.pathname))
+    }
+  }, [location.pathname, user])
 
   return (
   <nav className={`sticky top-0 z-50 bg-background/95 backdrop-blur-md border-b border-border/40 shadow-sm w-full transition-transform duration-300 ${isNavbarVisible ? 'translate-y-0' : '-translate-y-full md:translate-y-0'}`}>
@@ -205,12 +248,21 @@ export default function Navbar() {
                 </Button>
               </div>
             </>
-          ) : (
+          ) : isDashboardMode ? (
             <>
+              <Button
+                variant="ghost"
+                size="sm"
+                className="px-3 py-2 hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
+                onClick={() => { setIsDashboardMode(false); navigate('/'); }}
+                title="Exit to main navigation"
+              >
+                <LogOut size={16} />
+              </Button>
               <NavLink to="/dashboard" currentPath={location.pathname}>Dashboard</NavLink>
               <NavLink to="/my-courses" currentPath={location.pathname}>My Courses</NavLink>
               <NavLink to="/certificates" currentPath={location.pathname}>Certificates</NavLink>
-              
+
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <button className="flex items-center space-x-2 text-sm font-medium rounded-lg px-3 py-2 hover:bg-accent hover:text-accent-foreground transition-colors duration-200">
@@ -223,6 +275,115 @@ export default function Navbar() {
                 <DropdownMenuContent align="end" className="z-50 mt-1 w-48 rounded-lg shadow-lg">
                   <DropdownMenuItem className="cursor-pointer hover:bg-accent" onClick={() => navigate('/my-account')}>My Account</DropdownMenuItem>
                   <DropdownMenuItem className="cursor-pointer hover:bg-accent" onClick={() => navigate('/settings')}>Settings</DropdownMenuItem>
+                  <DropdownMenuItem
+                    onClick={() => {
+                      clearUser()
+                      navigate("/")
+                    }}
+                    className="cursor-pointer text-destructive hover:bg-destructive/10 focus:text-destructive"
+                  >
+                    Logout
+                  </DropdownMenuItem>
+                </DropdownMenuContent>
+              </DropdownMenu>
+            </>
+          ) : (
+            <>
+              <NavLink to="/" currentPath={location.pathname}>Home</NavLink>
+
+              {/* Courses Dropdown */}
+              <div
+                onMouseEnter={() => {
+                  if (coursesDropdownTimeoutRef.current) {
+                    clearTimeout(coursesDropdownTimeoutRef.current)
+                    coursesDropdownTimeoutRef.current = null
+                  }
+                  if (!coursesDropdownClicked) {
+                    setCoursesDropdownOpen(true)
+                  }
+                }}
+                onMouseLeave={() => {
+                  if (!coursesDropdownClicked) {
+                    coursesDropdownTimeoutRef.current = setTimeout(() => {
+                      setCoursesDropdownOpen(false)
+                    }, 150)
+                  }
+                }}
+              >
+                <DropdownMenu
+                  open={coursesDropdownOpen}
+                  onOpenChange={(open) => {
+                    if (coursesDropdownTimeoutRef.current) {
+                      clearTimeout(coursesDropdownTimeoutRef.current)
+                      coursesDropdownTimeoutRef.current = null
+                    }
+                    setCoursesDropdownOpen(open)
+                    if (!open) {
+                      setCoursesDropdownClicked(false)
+                    }
+                  }}
+                >
+                  <DropdownMenuTrigger asChild>
+                    <button
+                      onClick={() => {
+                        if (coursesDropdownTimeoutRef.current) {
+                          clearTimeout(coursesDropdownTimeoutRef.current)
+                          coursesDropdownTimeoutRef.current = null
+                        }
+                        setCoursesDropdownClicked(true)
+                        setCoursesDropdownOpen(true)
+                      }}
+                      className="relative text-sm font-medium rounded-lg px-3 py-2 hover:bg-accent hover:text-accent-foreground transition-colors duration-200 flex items-center"
+                    >
+                      Courses
+                      <svg className="ml-1 h-4 w-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                      </svg>
+                    </button>
+                  </DropdownMenuTrigger>
+                  <DropdownMenuContent
+                    className="z-50 mt-1 w-48 rounded-lg shadow-lg"
+                    onMouseEnter={() => {
+                      if (coursesDropdownTimeoutRef.current) {
+                        clearTimeout(coursesDropdownTimeoutRef.current)
+                        coursesDropdownTimeoutRef.current = null
+                      }
+                    }}
+                    onMouseLeave={() => {
+                      if (!coursesDropdownClicked) {
+                        coursesDropdownTimeoutRef.current = setTimeout(() => {
+                          setCoursesDropdownOpen(false)
+                        }, 150)
+                      }
+                    }}
+                  >
+                    <DropdownMenuItem className="p-0">
+                      <Link to="/courses?tab=all" className="block w-full px-3 py-2">All Courses</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="p-0">
+                      <Link to="/courses?tab=department" className="block w-full px-3 py-2">By Department</Link>
+                    </DropdownMenuItem>
+                    <DropdownMenuItem className="p-0">
+                      <Link to="/courses?tab=featured" className="block w-full px-3 py-2">Featured</Link>
+                    </DropdownMenuItem>
+                  </DropdownMenuContent>
+                </DropdownMenu>
+              </div>
+
+              <NavLink to="/about" currentPath={location.pathname}>About</NavLink>
+              <NavLink to="/contact" currentPath={location.pathname}>Contact</NavLink>
+
+              <DropdownMenu>
+                <DropdownMenuTrigger asChild>
+                  <button className="flex items-center space-x-2 text-sm font-medium rounded-lg px-3 py-2 hover:bg-accent hover:text-accent-foreground transition-colors duration-200">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary">
+                      {profile?.firstName?.[0] ? profile.firstName[0] : <User size={16} />}
+                    </div>
+                    <span>Profile</span>
+                  </button>
+                </DropdownMenuTrigger>
+                <DropdownMenuContent align="end" className="z-50 mt-1 w-48 rounded-lg shadow-lg">
+                  <DropdownMenuItem className="cursor-pointer hover:bg-accent" onClick={() => { setIsDashboardMode(true); navigate('/dashboard'); }}>Dashboard</DropdownMenuItem>
                   <DropdownMenuItem
                     onClick={() => {
                       clearUser()
@@ -318,8 +479,15 @@ export default function Navbar() {
                   </Button>
                 </div>
               </>
-            ) : (
+            ) : isDashboardMode ? (
               <>
+                <button
+                  className="relative text-base font-medium w-full text-left rounded-lg px-3 py-2.5 hover:bg-accent hover:text-accent-foreground transition-colors duration-200 flex items-center"
+                  onClick={() => { setIsDashboardMode(false); setIsMenuOpen(false); }}
+                >
+                  <LogOut size={16} className="mr-2" />
+                  Exit to Main Navigation
+                </button>
                 <NavLink to="/dashboard" currentPath={location.pathname} mobile onClick={() => setIsMenuOpen(false)}>
                   Dashboard
                 </NavLink>
@@ -371,44 +539,93 @@ export default function Navbar() {
                   </div>
                 )}
               </>
+            ) : (
+              <>
+                <NavLink to="/" currentPath={location.pathname} mobile onClick={() => setIsMenuOpen(false)}>
+                  Home
+                </NavLink>
+                <button
+                  className="relative text-base font-medium w-full text-left rounded-lg px-3 py-2.5 hover:bg-accent hover:text-accent-foreground transition-colors duration-200 flex items-center justify-between"
+                  aria-expanded={mobileCoursesOpen}
+                  onClick={() => setMobileCoursesOpen(!mobileCoursesOpen)}
+                >
+                  Courses
+                  <svg className={`h-4 w-4 transition-transform ${mobileCoursesOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {mobileCoursesOpen && (
+                  <div className="ml-4 space-y-1">
+                    <Link
+                      to="/courses?tab=all"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="relative text-base font-medium w-full text-left rounded-lg px-3 py-2 hover:bg-accent block"
+                    >
+                      All Courses
+                    </Link>
+                    <Link
+                      to="/courses?tab=department"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="relative text-base font-medium w-full text-left rounded-lg px-3 py-2 hover:bg-accent block"
+                    >
+                      By Department
+                    </Link>
+                    <Link
+                      to="/courses?tab=featured"
+                      onClick={() => setIsMenuOpen(false)}
+                      className="relative text-base font-medium w-full text-left rounded-lg px-3 py-2 hover:bg-accent block"
+                    >
+                      Featured
+                    </Link>
+                  </div>
+                )}
+
+                <NavLink to="/about" currentPath={location.pathname} mobile onClick={() => setIsMenuOpen(false)}>
+                  About
+                </NavLink>
+                <NavLink to="/contact" currentPath={location.pathname} mobile onClick={() => setIsMenuOpen(false)}>
+                  Contact
+                </NavLink>
+                <button
+                  className="relative text-base font-medium w-full text-left rounded-lg px-3 py-2.5 hover:bg-accent hover:text-accent-foreground transition-colors duration-200 flex items-center justify-between"
+                  aria-expanded={mobileProfileOpen}
+                  onClick={() => setMobileProfileOpen(!mobileProfileOpen)}
+                >
+                  <div className="flex items-center space-x-2">
+                    <div className="flex items-center justify-center w-8 h-8 rounded-full bg-primary/10 text-primary">
+                      {profile?.firstName?.[0] ? profile.firstName[0] : <User size={16} />}
+                    </div>
+                    <span>Profile</span>
+                  </div>
+                  <svg className={`h-4 w-4 transition-transform ${mobileProfileOpen ? 'rotate-180' : ''}`} fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M19 9l-7 7-7-7" />
+                  </svg>
+                </button>
+                {mobileProfileOpen && (
+                  <div className="ml-4 space-y-1">
+                    <button
+                      className="relative text-base font-medium w-full text-left rounded-lg px-3 py-2 hover:bg-accent"
+                      onClick={() => { setIsDashboardMode(true); navigate('/dashboard'); setIsMenuOpen(false); }}
+                    >
+                      Dashboard
+                    </button>
+                    <button
+                      onClick={() => {
+                        clearUser()
+                        setIsMenuOpen(false)
+                        navigate("/")
+                      }}
+                      className="relative text-base font-medium w-full text-left rounded-lg px-3 py-2 hover:bg-destructive/10 text-destructive"
+                    >
+                      Logout
+                    </button>
+                  </div>
+                )}
+              </>
             )}
           </div>
         </div>
       )}
     </nav>
-  )
-}
-
-/* Reusable Link Component with active state */
-function NavLink({
-  to,
-  children,
-  currentPath,
-  mobile,
-  onClick,
-}: {
-  to: string
-  children: React.ReactNode
-  currentPath?: string
-  mobile?: boolean
-  onClick?: () => void
-}) {
-  const isActive = currentPath === to
-  const baseClasses = mobile
-    ? "relative text-base font-medium w-full text-left rounded-lg px-3 py-2.5 hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
-    : "relative text-sm font-medium rounded-lg px-3 py-2 hover:bg-accent hover:text-accent-foreground transition-colors duration-200"
-  const activeClasses = isActive
-    ? " text-primary bg-accent/80 font-semibold"
-    : ""
-
-  return (
-    <Link 
-      to={to} 
-      onClick={onClick} 
-      aria-current={isActive ? "page" : undefined} 
-      className={`${baseClasses}${activeClasses}`}
-    >
-      {children}
-    </Link>
   )
 }
